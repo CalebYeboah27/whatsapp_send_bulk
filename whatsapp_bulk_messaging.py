@@ -2,18 +2,19 @@
 import pandas as pd
 import schedule as schedule
 from selenium import webdriver
+from selenium.common import StaleElementReferenceException
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 import selenium.webdriver.chrome.options as options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 # Set the Chrome WebDriver options
 # this option is to allow selenium to access chrome webdriver
 chrome_options = options.ChromiumOptions()
 chrome_options.add_argument("--remote-allow-origins=http://127.0.0.1:28943")
-
-
-Enter = '\ue007'  # code for enter key
 
 # Read data from Excel Sheet
 Data = pd.read_excel(open('contacts.xlsx', 'rb'), sheet_name='Data')
@@ -62,39 +63,46 @@ def send_whatsapp_message():
         chrome_browser.implicitly_wait(500)
 
         # Press Enter to confirm the search
-        search_box.send_keys(Enter)
+        search_box.send_keys(Keys.ENTER)
 
         # wait 500ms
         chrome_browser.implicitly_wait(500)
 
         # find message box from browser screen using the elements XPATH
-        message_box = chrome_browser.find_element(By.XPATH, "//*[@id=\"main\"]/footer/div[1]/div/span[2]/div/div["
-                                                            "2]/div[1]/div/div[1]/p")
-        # click in the search box
-        message_box.click()
 
-        # wait 500ms
-        chrome_browser.implicitly_wait(500)
+        try:
+            message_box = chrome_browser.find_element(By.XPATH, "/html/body/div[1]/div/div/div[5]/div/footer/div["
+                                                            "1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p")
 
-        # Load message into WebWhatsApp
-        message_box.send_keys(text_message)
+            # click in the search box
+            message_box.click()
 
-        # wait 500ms
-        chrome_browser.implicitly_wait(500)
+            # wait 500ms
+            chrome_browser.implicitly_wait(500)
 
-        # Press enter to confirm the message text
-        message_box.send_keys(Enter)
+            # Load message into WebWhatsApp
+            message_box.send_keys(text_message)
 
-        # wait 500ms
-        chrome_browser.implicitly_wait(500)
+            # wait 500ms
+            chrome_browser.implicitly_wait(500)
 
-        # clear search box before beginning again
-        search_box.clear()
+            # Press enter to confirm the message text
+            message_box.send_keys(Keys.ENTER)
+
+            print("Sent text")
+
+            # wait 500ms
+            chrome_browser.implicitly_wait(1000)
+
+            # clear search box before beginning again
+            search_box.clear()
+        except StaleElementReferenceException:
+            message_box = WebDriverWait(chrome_browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "selectable-text copyable-text iq0m558w g0rxnol2")))
+
     return schedule.CancelJob
 
 
 send_whatsapp_message()
-
 
 # run scheduled job only once at specified time
 # schedule.every().day.at(f'{hour}:{minutes}').do(send_whatsapp_message)

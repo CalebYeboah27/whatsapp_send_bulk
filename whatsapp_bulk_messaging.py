@@ -5,6 +5,13 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
+import selenium.webdriver.chrome.options as options
+
+# Set the Chrome WebDriver options
+# this option is to allow selenium to access chrome webdriver
+chrome_options = options.ChromiumOptions()
+chrome_options.add_argument("--remote-allow-origins=http://127.0.0.1:28943")
+
 
 Enter = '\ue007'  # code for enter key
 
@@ -41,7 +48,7 @@ def send_whatsapp_message():
         print(text_message, search_text)
 
         # find search box from browser screen using the elements XPATH
-        search_box = chrome_browser.find_element(By.XPATH, "//*[@id='side']/div[1]/div/div/div[2]/div/div[2]")
+        search_box = chrome_browser.find_element(By.XPATH, "//*[@id=\"side\"]/div[1]/div/div/div[2]/div/div[1]/p")
 
         # click in the search box
         search_box.click()
@@ -61,8 +68,8 @@ def send_whatsapp_message():
         chrome_browser.implicitly_wait(500)
 
         # find message box from browser screen using the elements XPATH
-        message_box = chrome_browser.find_element(By.XPATH, "//*[@id='main']/footer/div[1]/div/span[2]/div/div[2]/div["
-                                                            "1]/div/div[1]/p")
+        message_box = chrome_browser.find_element(By.XPATH, "//*[@id=\"main\"]/footer/div[1]/div/span[2]/div/div["
+                                                            "2]/div[1]/div/div[1]/p")
         # click in the search box
         message_box.click()
 
@@ -83,7 +90,6 @@ def send_whatsapp_message():
 
         # clear search box before beginning again
         search_box.clear()
-
     return schedule.CancelJob
 
 

@@ -72,7 +72,7 @@ def send_whatsapp_message():
 
         try:
             message_box = chrome_browser.find_element(By.XPATH, "/html/body/div[1]/div/div/div[5]/div/footer/div["
-                                                            "1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p")
+                                                                "1]/div/span[2]/div/div[2]/div[1]/div/div[1]/p")
 
             # click in the search box
             message_box.click()
@@ -92,12 +92,13 @@ def send_whatsapp_message():
             print("Sent text")
 
             # wait 500ms
-            chrome_browser.implicitly_wait(1000)
+            chrome_browser.implicitly_wait(2000)
 
             # clear search box before beginning again
             search_box.clear()
         except StaleElementReferenceException:
-            message_box = WebDriverWait(chrome_browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "selectable-text copyable-text iq0m558w g0rxnol2")))
+            message_box = WebDriverWait(chrome_browser, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "selectable-text copyable-text iq0m558w g0rxnol2")))
 
     return schedule.CancelJob
 
